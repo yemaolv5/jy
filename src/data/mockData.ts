@@ -24,11 +24,8 @@ export const RELATED_FEATURES = [
 ];
 
 export const QUICK_TAGS = [
-  '希望能支持手机桌面小组件一键开门',
   '长辈模式下字体建议再稍微放大一些',
-  '每月物业费账单希望增加明细PDF导出',
   '扫码充电偶发对焦慢，希望能优化相机的调起速度',
-  '报修工单处理完后建议增加短信或微信模板消息通知',
 ];
 
 export const DEFAULT_FEEDBACK_LIST: FeedbackItem[] = [

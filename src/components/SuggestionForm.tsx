@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { FeedbackItem, FeedbackType } from '../types';
 import { FEEDBACK_TYPES, RELATED_FEATURES, QUICK_TAGS } from '../data/mockData';
+import { formatCSTDateTime } from '../utils/date';
 
 interface SuggestionFormProps {
   onSubmit: (item: FeedbackItem) => void;
@@ -110,8 +111,9 @@ export const SuggestionForm: React.FC<SuggestionFormProps> = ({
 
     setTimeout(() => {
       const now = new Date();
+      const timeStr = formatCSTDateTime(now, true);
+      const logTimeStr = formatCSTDateTime(now, false);
       const pad = (n: number) => n.toString().padStart(2, '0');
-      const timeStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
       const randomCode = Math.floor(1000 + Math.random() * 9000);
       const newId = `YJ${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${randomCode}`;
 
@@ -132,7 +134,7 @@ export const SuggestionForm: React.FC<SuggestionFormProps> = ({
           : `移动终端设备 / 客户端 v2.4.2`,
         timeline: [
           {
-            time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+            time: logTimeStr,
             title: isAnonymous ? '建议已匿名提交' : '建议已提交',
             description: isAnonymous
               ? '系统已剔除个人姓名、手机号及房号信息'
@@ -491,7 +493,7 @@ export const SuggestionForm: React.FC<SuggestionFormProps> = ({
             )}
           </button>
           <p className="text-[11px] text-slate-400 text-center mt-1.5">
-            提交后可在「我的提交」随时查看物业及研发团队的处理进度
+            提交后将正式进入服务督办流程（不可撤回/删除），可在「查看反馈」随时跟踪处理进度
           </p>
         </div>
       </form>

@@ -7,8 +7,7 @@ import {
   MessageSquare,
   ChevronDown,
   ChevronUp,
-  Trash2,
-  Sparkles,
+  Lock,
   Search,
   CheckCircle2,
   PlusCircle,
@@ -16,19 +15,18 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { FeedbackItem, FeedbackStatus } from '../types';
+import { formatTimelineDisplay } from '../utils/date';
 
 interface HistoryViewProps {
   items: FeedbackItem[];
-  onDeleteItem: (id: string) => void;
-  onSimulateReply: (id: string) => void;
+  onDeleteItem?: (id: string) => void;
   onPreviewImage: (url: string) => void;
   onGoToForm: () => void;
 }
 
 export const HistoryView: React.FC<HistoryViewProps> = ({
   items,
-  onDeleteItem,
-  onSimulateReply,
+  onDeleteItem: _onDeleteItem,
   onPreviewImage,
   onGoToForm,
 }) => {
@@ -291,7 +289,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                                 {evt.title}
                               </span>
                               <span className="text-[10px] text-slate-400">
-                                {evt.time}
+                                {formatTimelineDisplay(evt.time, item.createdAt)}
                               </span>
                               {evt.operator && (
                                 <span className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">
@@ -319,28 +317,15 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                     <span>{item.createdAt}</span>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
-                    {/* Interactive button to simulate workflow / staff reply */}
-                    {item.status !== '已采纳' && item.status !== '已答复' && (
-                      <button
-                        type="button"
-                        onClick={() => onSimulateReply(item.id)}
-                        className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-medium transition-colors cursor-pointer"
-                        title="测试：模拟服务团队审核并进行采纳答复"
-                      >
-                        <Sparkles className="w-3 h-3 text-amber-500" />
-                        <span>模拟官方答复</span>
-                      </button>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => onDeleteItem(item.id)}
-                      className="p-1 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                      title="撤回/删除此条建议"
+                  <div className="flex items-center gap-2">
+                    {/* Immutable record badge: submissions cannot be withdrawn or deleted */}
+                    <span
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100/80 text-slate-400 text-[11px] select-none"
+                      title="已进入物业服务治理闭环系统，记录已正式归档，不可撤回或删除"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                      <Lock className="w-3 h-3 text-slate-400" />
+                      <span>不可撤回</span>
+                    </span>
                   </div>
                 </div>
               </article>

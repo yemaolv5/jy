@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { FeedbackItem, FeedbackStatus, AdminUser } from '../types';
 import { FEEDBACK_TYPES } from '../data/mockData';
+import { formatTimelineDisplay } from '../utils/date';
 import { api } from '../services/api';
 
 interface AdminViewProps {
@@ -589,7 +590,9 @@ export const AdminView: React.FC<AdminViewProps> = ({
                             <div className="absolute -left-[11px] top-1 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white" />
                             <div className="flex items-center gap-1.5 text-slate-700">
                               <span className="font-semibold">{evt.title}</span>
-                              <span className="text-[10px] text-slate-400">{evt.time}</span>
+                              <span className="text-[10px] text-slate-400">
+                                {formatTimelineDisplay(evt.time, item.createdAt)}
+                              </span>
                               {evt.operator && (
                                 <span className="text-[10px] text-slate-500 bg-slate-100 px-1 rounded">
                                   {evt.operator}

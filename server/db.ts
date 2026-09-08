@@ -14,7 +14,34 @@ const DATA_DIR = isVercel ? path.join('/tmp', 'data') : path.join(process.cwd(),
 const DB_FILE = path.join(DATA_DIR, 'feedback_db.json');
 const SEED_FILE = path.join(process.cwd(), 'data', 'feedback_db.json');
 
-export class FeedbackDatabase {
+export function formatCSTDateTime(dateInput: Date = new Date(), includeSeconds: boolean = false): string {
+  try {
+    const formatter = new Intl.DateTimeFormat('zh-CN', {
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: includeSeconds ? '2-digit' : undefined,
+      hour12: false,
+    });
+    const parts = formatter.formatToParts(dateInput);
+    const get = (type: string) => parts.find((p) => p.type === type)?.value || '';
+    const y = get('year');
+    const m = get('month');
+    const d = get('day');
+    const h = get('hour');
+    const min = get('minute');
+    const s = get('second');
+    return includeSeconds && s ? `${y}-${m}-${d} ${h}:${min}:${s}` : `${y}-${m}-${d} ${h}:${min}`;
+  } catch {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${dateInput.getFullYear()}-${pad(dateInput.getMonth() + 1)}-${pad(dateInput.getDate())} ${pad(dateInput.getHours())}:${pad(dateInput.getMinutes())}`;
+  }
+}
+
+class FeedbackDatabase {
   private localItems: FeedbackItem[] = [];
 
   constructor() {
@@ -158,7 +185,7 @@ export class FeedbackDatabase {
     remark?: string
   ): Promise<FeedbackItem | null> {
     const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const timeStr = formatCSTDateTime(now, false);
 
     const currentItem = await this.getById(id);
     if (!currentItem) return null;
@@ -220,10 +247,8 @@ export class FeedbackDatabase {
     if (!currentItem) return null;
 
     const now = new Date();
-    const timeFull = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-      now.getDate()
-    ).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    const timeShort = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const timeFull = formatCSTDateTime(now, true);
+    const timeShort = formatCSTDateTime(now, false);
 
     const officialReply = {
       repliedAt: timeFull,

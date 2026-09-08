@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ActiveTab, FeedbackItem, FeedbackStatus, AdminUser } from './types';
 import { DEFAULT_FEEDBACK_LIST } from './data/mockData';
 import { api, getStoredAdminSession, setStoredAdminSession } from './services/api';
+import { formatCSTDateTime } from './utils/date';
 import { Topbar } from './components/Topbar';
 import { SuggestionForm } from './components/SuggestionForm';
 import { HistoryView } from './components/HistoryView';
@@ -84,60 +85,6 @@ export default function App() {
     }
   };
 
-  // User deletes own submission
-  const handleDeleteItem = async (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
-    await api.deleteFeedback(id);
-    showToast('已撤回删除该条建议记录');
-  };
-
-  // User simulate reply in user view
-  const handleSimulateReply = async (id: string) => {
-    const now = new Date();
-    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-      now.getDate()
-    ).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(
-      now.getMinutes()
-    ).padStart(2, '0')}`;
-
-    const replyData = {
-      responderName: '智汇服务体验组 - 王主管',
-      responderRole: '产品负责人',
-      content:
-        '您好！非常感谢您的宝贵建议。我们已在内部完成方案评审，技术团队已安排优化改造，预期在近期版本上线，届时欢迎您体验！',
-    };
-
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          return {
-            ...item,
-            status: '已采纳',
-            officialReply: {
-              repliedAt: timeStr,
-              ...replyData,
-            },
-            timeline: [
-              ...item.timeline,
-              {
-                time: `${String(now.getHours()).padStart(2, '0')}:${String(
-                  now.getMinutes()
-                ).padStart(2, '0')}`,
-                title: '建议已被采纳并答复',
-                description: '体验组评估通过，已进入排期开发流程',
-                operator: '体验组负责人',
-              },
-            ],
-          };
-        }
-        return item;
-      })
-    );
-
-    await api.replyFeedback(id, replyData, '已采纳');
-    showToast('已完成模拟官方审核与采纳答复！');
-  };
-
   // Admin login success
   const handleAdminLoginSuccess = (admin: AdminUser) => {
     setAdminUser(admin);
@@ -158,11 +105,12 @@ export default function App() {
 
   // Admin updates status
   const handleAdminUpdateStatus = async (id: string, status: FeedbackStatus, remark?: string) => {
+    const now = new Date();
+    const timeStr = formatCSTDateTime(now, false);
+
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const now = new Date();
-          const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
           return {
             ...item,
             status,
@@ -200,10 +148,8 @@ export default function App() {
     } else {
       // Optimistic local update
       const now = new Date();
-      const timeFull = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-        now.getDate()
-      ).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      const timeShort = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const timeFull = formatCSTDateTime(now, true);
+      const timeShort = formatCSTDateTime(now, false);
 
       setItems((prev) =>
         prev.map((item) => {
@@ -272,8 +218,6 @@ export default function App() {
           ) : activeTab === 'history' ? (
             <HistoryView
               items={items}
-              onDeleteItem={handleDeleteItem}
-              onSimulateReply={handleSimulateReply}
               onPreviewImage={(url) => setPreviewImageUrl(url)}
               onGoToForm={() => setActiveTab('form')}
             />

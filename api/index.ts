@@ -296,13 +296,46 @@ router.post('/feedback', async (req: Request, res: Response) => {
   res.status(201).json({ success: true, item: newItem, mode: 'local' });
 });
 
+function formatCSTDateTime(dateInput: Date = new Date(), includeSeconds: boolean = false): string {
+  try {
+    const formatter = new Intl.DateTimeFormat('zh-CN', {
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: includeSeconds ? '2-digit' : undefined,
+      hour12: false,
+    });
+    const parts = formatter.formatToParts(dateInput);
+    const get = (type: string) => parts.find((p) => p.type === type)?.value || '';
+    const y = get('year');
+    const m = get('month');
+    const d = get('day');
+    const h = get('hour');
+    const min = get('minute');
+    const s = get('second');
+    return includeSeconds && s ? `${y}-${m}-${d} ${h}:${min}:${s}` : `${y}-${m}-${d} ${h}:${min}`;
+  } catch {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const y = dateInput.getFullYear();
+    const m = pad(dateInput.getMonth() + 1);
+    const d = pad(dateInput.getDate());
+    const h = pad(dateInput.getHours());
+    const min = pad(dateInput.getMinutes());
+    const s = pad(dateInput.getSeconds());
+    return includeSeconds ? `${y}-${m}-${d} ${h}:${min}:${s}` : `${y}-${m}-${d} ${h}:${min}`;
+  }
+}
+
 // Admin status update
 router.put('/admin/feedback/:id/status', requireAdmin, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status, operator, remark } = req.body;
 
   const now = new Date();
-  const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const timeStr = formatCSTDateTime(now, false);
 
   const supabase = getSupabase();
   if (supabase) {
@@ -359,10 +392,8 @@ router.post('/admin/feedback/:id/reply', requireAdmin, async (req: Request, res:
   }
 
   const now = new Date();
-  const timeFull = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-    now.getDate()
-  ).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-  const timeShort = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const timeFull = formatCSTDateTime(now, true);
+  const timeShort = formatCSTDateTime(now, false);
 
   const officialReply: FeedbackReply = {
     repliedAt: timeFull,
