@@ -193,4 +193,17 @@ export const api = {
     }
     return null;
   },
+
+  // Check Cloud Storage Status
+  checkStorageStatus: async (): Promise<{ configured: boolean; mode: string; message: string }> => {
+    try {
+      const res = await fetch('/api/storage-status');
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // ignore
+    }
+    return { configured: false, mode: 'local', message: '本地存储模式' };
+  },
 };

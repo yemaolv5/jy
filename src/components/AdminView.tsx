@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Shield,
   User,
@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { FeedbackItem, FeedbackStatus, AdminUser } from '../types';
 import { FEEDBACK_TYPES } from '../data/mockData';
+import { api } from '../services/api';
 
 interface AdminViewProps {
   admin: AdminUser;
@@ -58,6 +59,17 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [anonymityFilter, setAnonymityFilter] = useState<'全部' | '匿名' | '实名'>('全部');
   const [typeFilter, setTypeFilter] = useState<string>('全部');
   const [replyingId, setReplyingId] = useState<string | null>(null);
+  const [storageInfo, setStorageInfo] = useState<{ configured: boolean; mode: string; message: string }>({
+    configured: false,
+    mode: 'checking',
+    message: '正在检测云端数据库状态...',
+  });
+
+  useEffect(() => {
+    api.checkStorageStatus().then((info) => {
+      setStorageInfo(info);
+    });
+  }, []);
 
   // Reply form state
   const [responderName, setResponderName] = useState('服务治理与体验组');
@@ -191,9 +203,26 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   {admin.role}
                 </span>
               </div>
-              <p className="text-xs text-slate-300 mt-0.5">
-                已登录账号：<span className="font-mono text-blue-300 font-semibold">{admin.username}</span> · 数据库实时同步
-              </p>
+              <div className="flex flex-wrap items-center gap-2 mt-1">
+                <span className="text-xs text-slate-300">
+                  账号：<span className="font-mono text-blue-300 font-semibold">{admin.username}</span>
+                </span>
+                <span className="text-slate-600">|</span>
+                {storageInfo.configured ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-medium border border-emerald-500/30">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    云数据库已同步 (Supabase)
+                  </span>
+                ) : (
+                  <span
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-medium border border-amber-500/30 cursor-help"
+                    title="部署到 Vercel 时在 Settings -> Environment Variables 配置 SUPABASE_URL 和 SUPABASE_ANON_KEY 即可开启多设备云同步"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    本地模式 (未连接云数据库)
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
