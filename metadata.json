@@ -1,0 +1,6 @@
+{
+  "name": "意见建议与反馈",
+  "description": "支持用户匿名反馈的意见建议提交与处理进度追踪应用",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
