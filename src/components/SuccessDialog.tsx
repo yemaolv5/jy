@@ -69,7 +69,7 @@ export const SuccessDialog: React.FC<SuccessDialogProps> = ({
         </div>
 
         <p className="text-xs text-slate-500 mb-5 leading-relaxed">
-          非常感谢您对服务与产品体验的真诚建议，相关部门会尽快评估并在「我的提交」中同步进度。
+          非常感谢您对服务与产品体验的真诚建议，相关部门会尽快评估并在「意见列表」中同步进度。
         </p>
 
         <div className="grid grid-cols-2 gap-3">

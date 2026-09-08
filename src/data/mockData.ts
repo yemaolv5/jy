@@ -23,11 +23,6 @@ export const RELATED_FEATURES = [
   '其他功能',
 ];
 
-export const QUICK_TAGS = [
-  '长辈模式下字体建议再稍微放大一些',
-  '扫码充电偶发对焦慢，希望能优化相机的调起速度',
-];
-
 export const DEFAULT_FEEDBACK_LIST: FeedbackItem[] = [
   {
     id: 'YJ20250907001',

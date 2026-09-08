@@ -69,7 +69,7 @@ export const Topbar: React.FC<TopbarProps> = ({
         {activeTab === 'form'
           ? '意见建议'
           : activeTab === 'history'
-          ? '我的提交'
+          ? '意见列表'
           : '意见建议管理后台'}
       </h1>
 
@@ -83,7 +83,7 @@ export const Topbar: React.FC<TopbarProps> = ({
             className="relative flex items-center gap-1 text-xs font-semibold py-1.5 px-2.5 rounded-full bg-white/20 hover:bg-white/30 text-white transition-all active:scale-95 cursor-pointer"
           >
             <FileText className="w-3.5 h-3.5" />
-            <span>我的提交</span>
+            <span>意见列表</span>
             {submissionCount > 0 && (
               <span className="ml-0.5 px-1.5 py-0.2 text-[10px] font-bold bg-amber-400 text-slate-900 rounded-full">
                 {submissionCount}

@@ -9,11 +9,10 @@ import {
   User,
   Phone,
   Info,
-  Sparkles,
   CheckCircle2,
 } from 'lucide-react';
 import { FeedbackItem, FeedbackType } from '../types';
-import { FEEDBACK_TYPES, RELATED_FEATURES, QUICK_TAGS } from '../data/mockData';
+import { FEEDBACK_TYPES, RELATED_FEATURES } from '../data/mockData';
 import { formatCSTDateTime } from '../utils/date';
 
 interface SuggestionFormProps {
@@ -78,17 +77,6 @@ export const SuggestionForm: React.FC<SuggestionFormProps> = ({
 
   const handleRemoveImage = (indexToRemove: number) => {
     setImages(prev => prev.filter((_, idx) => idx !== indexToRemove));
-  };
-
-  const handleApplyQuickTag = (tag: string) => {
-    if (description.includes(tag)) {
-      onShowToast('该建议已在内容中');
-      return;
-    }
-    const separator = description.trim() ? '\n' : '';
-    const newText = (description + separator + tag).slice(0, MAX_CHARS);
-    setDescription(newText);
-    onShowToast('已填入常用建议内容');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -356,26 +344,6 @@ export const SuggestionForm: React.FC<SuggestionFormProps> = ({
                 className="w-full p-3 text-xs sm:text-sm text-slate-800 bg-transparent resize-y outline-none placeholder:text-slate-400 leading-relaxed min-h-[120px]"
               />
             </div>
-
-            {/* Quick Suggestions Helper */}
-            <div className="mt-2.5">
-              <div className="flex items-center gap-1 text-xs text-slate-500 mb-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>常见建议快捷填入：</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {QUICK_TAGS.map((tag, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => handleApplyQuickTag(tag)}
-                    className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 border border-slate-200/60 transition-colors cursor-pointer text-left"
-                  >
-                    + {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* 上传截图 */}
@@ -493,7 +461,7 @@ export const SuggestionForm: React.FC<SuggestionFormProps> = ({
             )}
           </button>
           <p className="text-[11px] text-slate-400 text-center mt-1.5">
-            提交后将正式进入服务督办流程（不可撤回/删除），可在「查看反馈」随时跟踪处理进度
+            提交后将正式进入服务督办流程（不可撤回/删除）
           </p>
         </div>
       </form>
